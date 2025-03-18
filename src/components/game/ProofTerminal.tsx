@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogFooter
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, Loader2, Upload } from 'lucide-react';
 
 interface ProofTerminalProps {
   isOpen: boolean;
@@ -23,6 +26,9 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   blocksDestroyed,
   gameWon
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  
   // Simulate an SP1 proof with game data
   const proofData = {
     id: `proof_${Date.now().toString(16)}`,
@@ -40,9 +46,18 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
     platform: "SP1 ZK-Rollup",
   };
 
+  const handleSubmitProof = () => {
+    setIsSubmitting(true);
+    // Simulate proof submission
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }, 2000);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-gray-900 border-purple-700 max-w-3xl w-full">
+      <DialogContent className="bg-gray-900 border-purple-700 max-w-3xl w-full font-urbanist">
         <DialogHeader>
           <DialogTitle className="text-purple-400">Proof Generation Complete</DialogTitle>
           <DialogDescription>
@@ -93,9 +108,34 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
           </pre>
           
           <div className="text-gray-400">
-            <span className="text-purple-500">$</span> Proof successfully verified and committed to chain
+            <span className="text-purple-500">$</span> {isSubmitted ? 'Proof successfully submitted to chain' : 'Proof ready for submission'}
           </div>
         </div>
+        
+        <DialogFooter>
+          <Button
+            className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+            disabled={isSubmitting || isSubmitted}
+            onClick={handleSubmitProof}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="mr-2 animate-spin" />
+                Submitting...
+              </>
+            ) : isSubmitted ? (
+              <>
+                <CheckCircle2 size={16} className="mr-2" />
+                Proof Submitted
+              </>
+            ) : (
+              <>
+                <Upload size={16} className="mr-2" />
+                Submit Proof
+              </>
+            )}
+          </Button>
+        </DialogFooter>
         
         <div className="text-xs text-gray-500 mt-2">
           <p>Note: This is a simulation of SP1 proof generation. In a real implementation, 

@@ -17,7 +17,7 @@ const ProofCounter: React.FC<ProofCounterProps> = ({
   gameWon
 }) => {
   return (
-    <div className="bg-purple-900 rounded-md p-2 shadow-md transition-transform">
+    <div className="bg-purple-900 rounded-md p-2 shadow-md transition-transform font-urbanist">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <BadgeCheck size={20} className="text-purple-400 mr-2" />

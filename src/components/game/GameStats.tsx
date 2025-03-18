@@ -1,15 +1,16 @@
 
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Trophy } from 'lucide-react';
 
 interface GameStatsProps {
   score: number;
   lives: number;
+  level?: number;
 }
 
-const GameStats: React.FC<GameStatsProps> = ({ score, lives }) => {
+const GameStats: React.FC<GameStatsProps> = ({ score, lives, level = 1 }) => {
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 font-urbanist">
       <div className="bg-gray-800 rounded-md p-2 shadow-md">
         <p className="text-sm font-medium text-gray-400">Score</p>
         <p className="text-xl font-bold text-white">{score}</p>
@@ -26,6 +27,14 @@ const GameStats: React.FC<GameStatsProps> = ({ score, lives }) => {
               fill={i < lives ? "#ef4444" : "transparent"}
             />
           ))}
+        </div>
+      </div>
+      
+      <div className="bg-gray-800 rounded-md p-2 shadow-md">
+        <p className="text-sm font-medium text-gray-400">Level</p>
+        <div className="flex items-center">
+          <Trophy size={16} className="text-yellow-500 mr-1" />
+          <p className="text-xl font-bold text-white">{level}</p>
         </div>
       </div>
     </div>
