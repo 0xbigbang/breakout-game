@@ -4,7 +4,7 @@ import GameBoard from "@/components/game/GameBoard";
 import { GameProvider } from "@/context/GameContext";
 import MacWindow from "@/components/ui/mac-window";
 import DesktopIcon from "@/components/game/DesktopIcon";
-import { GameController } from "lucide-react";
+import { Gamepad } from "lucide-react";
 
 const Index = () => {
   const [showGame, setShowGame] = useState(false);
@@ -28,7 +28,7 @@ const Index = () => {
         <div className="flex flex-col items-center">
           <DesktopIcon 
             name="Crypto Breakout"
-            icon={<GameController size={36} className="text-purple-400" />}
+            icon={<Gamepad size={36} className="text-purple-400" />}
             onDoubleClick={handleOpenGame}
           />
           <p className="mt-8 text-gray-400 text-sm">Double-click the icon to start the game</p>
