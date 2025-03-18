@@ -1,13 +1,15 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Button } from "@/components/ui/button";
 import ProofCounter from './ProofCounter';
 import GameStats from './GameStats';
+import ProofTerminal from './ProofTerminal';
 
 const GameBoard = () => {
   const { gameState, resetGame, launchBall } = useGame();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [showProofTerminal, setShowProofTerminal] = useState(false);
   
   // Draw game on canvas
   useEffect(() => {
@@ -91,6 +93,10 @@ const GameBoard = () => {
     }
   }, [gameState]);
   
+  const handleGenerateProof = () => {
+    setShowProofTerminal(true);
+  };
+  
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-between w-full mb-2">
@@ -100,6 +106,9 @@ const GameBoard = () => {
         />
         <ProofCounter 
           count={gameState.proofGenerated} 
+          onGenerateProof={handleGenerateProof}
+          gameOver={gameState.gameOver}
+          gameWon={gameState.gameWon}
         />
       </div>
       
@@ -131,6 +140,14 @@ const GameBoard = () => {
           </Button>
         </div>
       )}
+      
+      <ProofTerminal 
+        isOpen={showProofTerminal}
+        onClose={() => setShowProofTerminal(false)}
+        score={gameState.score}
+        blocksDestroyed={gameState.proofGenerated}
+        gameWon={gameState.gameWon}
+      />
     </div>
   );
 };
