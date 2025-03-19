@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Menubar,
   MenubarMenu,
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/menubar";
 
 const MacMenuBar: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="border-b border-gray-700 bg-gray-800 text-gray-300 font-urbanist">
       <Menubar className="border-none bg-transparent rounded-none px-2 h-7">
@@ -80,11 +83,17 @@ const MacMenuBar: React.FC = () => {
             <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
               Documentation
             </MenubarItem>
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
+            <MenubarItem 
+              className="text-xs hover:bg-gray-700 focus:bg-gray-700"
+              onClick={() => window.open("https://github.com/0xbigbang/pixel-proof-quest", "_blank")}
+            >
               View on GitHub
             </MenubarItem>
             <MenubarSeparator className="bg-gray-700" />
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
+            <MenubarItem 
+              className="text-xs hover:bg-gray-700 focus:bg-gray-700"
+              onClick={() => navigate('/about')}
+            >
               About
             </MenubarItem>
           </MenubarContent>

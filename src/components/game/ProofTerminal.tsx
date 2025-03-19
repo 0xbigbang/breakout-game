@@ -1,16 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter
-} from "@/components/ui/dialog";
+import { X } from 'lucide-react';
+import { verifyGameWithSP1, VerificationResult } from '@/lib/wasmLoader';
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Loader2, Upload, Terminal } from 'lucide-react';
-import { verifyGameWithSP1, loadWasmModule } from '@/lib/wasmLoader';
 
 interface ProofTerminalProps {
   isOpen: boolean;
@@ -20,160 +12,141 @@ interface ProofTerminalProps {
   gameWon: boolean;
 }
 
-// Define an interface for the verification result
-interface VerificationResult {
-  verified: boolean;
-  proofId: string;
-  commitment: string;
-  verificationTime: string;
-  gameData?: any;
-  proofSize?: string;
-  circuit?: string;
-  platform?: string;
-}
-
 const ProofTerminal: React.FC<ProofTerminalProps> = ({
   isOpen,
   onClose,
   score,
   blocksDestroyed,
-  gameWon
+  gameWon,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
-  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+  const [verificationResult, setVerificationResult] = useState<VerificationResult & {
+    gameData?: any;
+    proofSize?: string;
+    circuit?: string;
+    platform?: string;
+  } | null>(null);
   const [verificationLogs, setVerificationLogs] = useState<string[]>([
     "Initializing WASM environment...",
     "Loading SP1 verification module..."
   ]);
   
-  // Load WASM module when component mounts
+  const addLog = (log: string) => {
+    setVerificationLogs(prev => [...prev, log]);
+  };
+  
+  // Scroll to bottom when logs update
   useEffect(() => {
-    if (isOpen) {
-      // Reset state
-      setIsVerifying(true);
-      setIsSubmitted(false);
-      setVerificationLogs([
-        "Initializing WASM environment...",
-        "Loading SP1 verification module..."
-      ]);
-      
-      // Simulate verification process
-      const runVerification = async () => {
+    const terminal = document.getElementById('proof-terminal-logs');
+    if (terminal) {
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+  }, [verificationLogs]);
+  
+  // Generate proof when terminal is opened
+  useEffect(() => {
+    if (isOpen && !isSubmitted) {
+      const generateProof = async () => {
         try {
-          // Pre-load the WASM module
-          await loadWasmModule();
-          addLog("WASM module loaded successfully");
-          addLog("Initializing proof verification...");
+          // Simulate a verification process with logs
+          addLog("Starting proof generation...");
+          await new Promise(r => setTimeout(r, 800));
+          addLog("Initializing SP1 circuit...");
+          await new Promise(r => setTimeout(r, 1200));
+          addLog("Computing witness...");
+          await new Promise(r => setTimeout(r, 1500));
+          addLog("Generating ZK proof...");
+          await new Promise(r => setTimeout(r, 2000));
+          addLog("Running verification...");
           
+          // Prepare game data for verification
           const gameData = {
             score,
             blocksDestroyed,
             gameWon,
             gameCompleted: gameWon,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           };
           
-          addLog("Retrieving game data...");
-          addLog("Preparing data for SP1 verification...");
-          
-          // Call the WASM verification function
+          // Call WASM module for verification
           const result = await verifyGameWithSP1(gameData);
           addLog("Verification complete!");
           
-          // Ensure result is treated as an object
+          // Update state with verification result
           setVerificationResult({
-            ...result as object,
+            ...result,
             gameData,
             proofSize: `${Math.floor(blocksDestroyed * 1.5)} kb`,
             circuit: "sp1_breakout_verification_v1",
-            platform: "SP1 ZK-Rollup",
+            platform: "WebAssembly SP1"
           });
           
           setIsVerifying(false);
         } catch (error) {
-          console.error("Verification error:", error);
-          addLog("❌ Error during verification process");
+          console.error("Error generating proof:", error);
+          addLog(`Error: ${error instanceof Error ? error.message : String(error)}`);
           setIsVerifying(false);
         }
       };
       
-      runVerification();
+      generateProof();
     }
-  }, [isOpen, score, blocksDestroyed, gameWon]);
+  }, [isOpen, isSubmitted, score, blocksDestroyed, gameWon]);
   
-  const addLog = (log: string) => {
-    setVerificationLogs(prev => [...prev, log]);
-  };
-
-  const handleSubmitProof = () => {
-    setIsSubmitting(true);
-    addLog("Submitting proof to blockchain...");
+  // Simulate submitting the proof to blockchain
+  const handleSubmit = async () => {
+    if (isSubmitting || !verificationResult) return;
     
-    // Simulate proof submission
-    setTimeout(() => {
-      addLog("Proof successfully submitted!");
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 2000);
+    setIsSubmitting(true);
+    addLog("Preparing proof for submission...");
+    await new Promise(r => setTimeout(r, 1000));
+    addLog("Connecting to blockchain...");
+    await new Promise(r => setTimeout(r, 1500));
+    addLog("Submitting proof...");
+    await new Promise(r => setTimeout(r, 2000));
+    addLog("Waiting for confirmation...");
+    await new Promise(r => setTimeout(r, 1500));
+    addLog("Proof submitted successfully! Transaction hash: 0x" + Math.random().toString(16).slice(2, 10) + "...");
+    setIsSubmitting(false);
+    setIsSubmitted(true);
   };
-
-  if (!verificationResult && isVerifying) {
-    return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="bg-gray-900 border-purple-700 max-w-3xl w-full font-urbanist">
-          <DialogHeader>
-            <DialogTitle className="text-purple-400">Generating Zero-Knowledge Proof</DialogTitle>
-            <DialogDescription>
-              Using WebAssembly to verify your game session with SP1
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="font-mono bg-black p-4 rounded-md text-green-400 text-sm overflow-auto max-h-[60vh]">
-            {verificationLogs.map((log, index) => (
-              <div key={index} className="mb-1">
-                <span className="text-purple-500">$</span> {log}
-              </div>
-            ))}
-            <div className="mt-2 flex items-center">
-              <Loader2 size={16} className="mr-2 animate-spin text-purple-400" />
-              <span className="text-purple-400">Processing...</span>
-            </div>
-          </div>
-          
-          <div className="text-xs text-gray-500 mt-2">
-            <p>WASM module is executing SP1 zero-knowledge proof generation...</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
+  
+  if (!isOpen) return null;
+  
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-gray-900 border-purple-700 max-w-3xl w-full font-urbanist">
-        <DialogHeader>
-          <DialogTitle className="text-purple-400">Zero-Knowledge Proof Generated</DialogTitle>
-          <DialogDescription>
-            WebAssembly verification complete via SP1
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 border border-purple-700 rounded-lg w-full max-w-3xl max-h-[80vh] flex flex-col font-mono text-xs md:text-sm">
+        <div className="flex justify-between items-center bg-gray-800 px-4 py-2 rounded-t-lg border-b border-purple-700">
+          <h3 className="text-purple-400 font-medium">SP1 Zero-Knowledge Proof Terminal</h3>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
         
-        <div className="font-mono bg-black p-4 rounded-md text-green-400 text-sm overflow-auto max-h-[60vh]">
-          <div className="mb-3">
-            <span className="text-purple-500">$</span> <span className="text-yellow-400">sp1_verify</span> --game=crypto_breakout --session={verificationResult?.proofId}
-          </div>
-          
+        <div 
+          id="proof-terminal-logs"
+          className="flex-1 p-4 bg-gray-950 overflow-y-auto"
+          style={{ maxHeight: "50vh" }}
+        >
           {verificationLogs.map((log, index) => (
-            <div key={index} className="text-gray-400 mb-1">{log}</div>
+            <div key={index} className="mb-1">
+              <span className="text-green-400 mr-2">$</span>
+              <span className="text-gray-300">{log}</span>
+            </div>
           ))}
-          
-          {verificationResult && (
-            <pre className="text-white mb-4">
-{`
+        </div>
+        
+        {verificationResult && !isVerifying && (
+          <div className="p-4 bg-gray-800 border-t border-gray-700 overflow-y-auto" style={{ maxHeight: "30vh" }}>
+            <pre className="text-gray-300 whitespace-pre-wrap">
+  {`
   +--------------------------+
-  |      PROOF VERIFIED      |
+  |       PROOF DETAILS      |
   +--------------------------+
   
   • Proof ID:        ${verificationResult.proofId}
@@ -183,7 +156,7 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   • Verify Time:     ${verificationResult.verificationTime}
   
   +--------------------------+
-  |       GAME RESULTS       |
+  |       GAME DETAILS       |
   +--------------------------+
   
   • Score:           ${score}
@@ -195,50 +168,27 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   |  CRYPTOGRAPHIC DETAILS   |
   +--------------------------+
   
+  • Commitment:      ${verificationResult.commitment}
   • Circuit:         ${verificationResult.circuit}
   • Platform:        ${verificationResult.platform}
-  • Public Inputs:   [score=${score}, blocks=${blocksDestroyed}, won=${gameWon ? 1 : 0}]
-  • Commitment:      ${verificationResult.commitment}
-`}
+  `}
             </pre>
-          )}
-          
-          <div className="text-gray-400">
-            <span className="text-purple-500">$</span> {isSubmitted ? 'Proof successfully submitted to chain' : 'Proof ready for submission'}
-          </div>
-        </div>
-        
-        <DialogFooter>
-          <Button
-            className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
-            disabled={isSubmitting || isSubmitted}
-            onClick={handleSubmitProof}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={16} className="mr-2 animate-spin" />
-                Submitting...
-              </>
-            ) : isSubmitted ? (
-              <>
-                <CheckCircle2 size={16} className="mr-2" />
-                Proof Submitted
-              </>
-            ) : (
-              <>
-                <Upload size={16} className="mr-2" />
-                Submit Proof
-              </>
+            
+            {!isSubmitted && (
+              <div className="mt-4 flex justify-center">
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isSubmitting}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                >
+                  {isSubmitting ? "Submitting..." : "Submit to Blockchain"}
+                </Button>
+              </div>
             )}
-          </Button>
-        </DialogFooter>
-        
-        <div className="text-xs text-gray-500 mt-2">
-          <p>This is using WebAssembly to simulate SP1 proof generation. In a full implementation, 
-          this would connect to a Rust WASM module that generates actual zero-knowledge proofs.</p>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

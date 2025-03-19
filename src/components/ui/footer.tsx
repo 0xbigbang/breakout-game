@@ -12,6 +12,13 @@ const Footer: React.FC = () => {
           className="text-purple-400 hover:text-purple-300 transition-colors"
         >
           @beatdetect
+        </a> | <a 
+          href="https://github.com/0xbigbang/pixel-proof-quest" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:text-purple-300 transition-colors"
+        >
+          Github
         </a>
       </p>
     </div>

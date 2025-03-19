@@ -10,6 +10,16 @@ const GameBoard = () => {
   const { gameState, resetGame, launchBall, advanceLevel } = useGame();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [showProofTerminal, setShowProofTerminal] = useState(false);
+  const [crabImage, setCrabImage] = useState<HTMLImageElement | null>(null);
+  
+  // Load crab image
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/lovable-uploads/b7ee3073-a53a-4f0d-a5fa-9f8dcaff7ca0.png';
+    img.onload = () => {
+      setCrabImage(img);
+    };
+  }, []);
   
   // Draw game on canvas
   useEffect(() => {
@@ -35,17 +45,30 @@ const GameBoard = () => {
       gameState.paddle.height
     );
     
-    // Draw ball
-    ctx.fillStyle = '#FEC6A1';
-    ctx.beginPath();
-    ctx.arc(
-      gameState.ball.position.x,
-      gameState.ball.position.y,
-      gameState.ball.radius,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+    // Draw crab (instead of ball)
+    if (crabImage) {
+      // Calculate position to center the crab image
+      const crabSize = gameState.ball.radius * 2.5; // Make crab a bit larger than the ball radius
+      ctx.drawImage(
+        crabImage,
+        gameState.ball.position.x - crabSize/2,
+        gameState.ball.position.y - crabSize/2,
+        crabSize,
+        crabSize
+      );
+    } else {
+      // Fallback to circle if image isn't loaded
+      ctx.fillStyle = '#FEC6A1';
+      ctx.beginPath();
+      ctx.arc(
+        gameState.ball.position.x,
+        gameState.ball.position.y,
+        gameState.ball.radius,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
     
     // Draw blocks
     gameState.blocks.forEach(block => {
@@ -93,7 +116,7 @@ const GameBoard = () => {
         canvas.height / 2 + 20
       );
     }
-  }, [gameState]);
+  }, [gameState, crabImage]);
   
   const handleGenerateProof = () => {
     setShowProofTerminal(true);
@@ -150,7 +173,7 @@ const GameBoard = () => {
             onClick={launchBall}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
           >
-            Launch Ball
+            Launch Crab
           </Button>
         </div>
       )}
