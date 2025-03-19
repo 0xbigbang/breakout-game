@@ -33,6 +33,7 @@ const ProofCounter: React.FC<ProofCounterProps> = ({
             size="sm"
             className="ml-4 bg-purple-800 hover:bg-purple-700 border-purple-600 text-white"
             onClick={onGenerateProof}
+            title="Generate ZK proof of your current game state"
           >
             <Terminal size={16} className="mr-1" />
             Generate Proof
