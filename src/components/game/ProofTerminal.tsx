@@ -20,6 +20,18 @@ interface ProofTerminalProps {
   gameWon: boolean;
 }
 
+// Define an interface for the verification result
+interface VerificationResult {
+  verified: boolean;
+  proofId: string;
+  commitment: string;
+  verificationTime: string;
+  gameData?: any;
+  proofSize?: string;
+  circuit?: string;
+  platform?: string;
+}
+
 const ProofTerminal: React.FC<ProofTerminalProps> = ({
   isOpen,
   onClose,
@@ -30,7 +42,7 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
-  const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
   const [verificationLogs, setVerificationLogs] = useState<string[]>([
     "Initializing WASM environment...",
     "Loading SP1 verification module..."
@@ -70,8 +82,9 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
           const result = await verifyGameWithSP1(gameData);
           addLog("Verification complete!");
           
+          // Ensure result is treated as an object
           setVerificationResult({
-            ...result,
+            ...result as object,
             gameData,
             proofSize: `${Math.floor(blocksDestroyed * 1.5)} kb`,
             circuit: "sp1_breakout_verification_v1",
@@ -164,7 +177,7 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   +--------------------------+
   
   • Proof ID:        ${verificationResult.proofId}
-  • Timestamp:       ${verificationResult.gameData.timestamp}
+  • Timestamp:       ${verificationResult.gameData?.timestamp}
   • Verification:    ${verificationResult.verified ? "VERIFIED" : "FAILED"}
   • Proof Size:      ${verificationResult.proofSize}
   • Verify Time:     ${verificationResult.verificationTime}
@@ -176,7 +189,7 @@ const ProofTerminal: React.FC<ProofTerminalProps> = ({
   • Score:           ${score}
   • Blocks Destroyed: ${blocksDestroyed}
   • Game Won:        ${gameWon ? "YES" : "NO"}
-  • Game Completed:  ${verificationResult.gameData.gameCompleted ? "TRUE" : "FALSE"}
+  • Game Completed:  ${verificationResult.gameData?.gameCompleted ? "TRUE" : "FALSE"}
   
   +--------------------------+
   |  CRYPTOGRAPHIC DETAILS   |

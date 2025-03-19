@@ -1,11 +1,18 @@
-
 // Utility for loading and interacting with WASM modules
 let wasmModule: any = null;
 let isLoading = false;
 let loadPromise: Promise<any> | null = null;
 
+// Define the structure of a verification result
+export interface VerificationResult {
+  verified: boolean;
+  proofId: string;
+  commitment: string;
+  verificationTime: string;
+}
+
 // Simple SP1 verification simulator (will be replaced by actual WASM)
-const simulateSP1Verification = (gameData: any) => {
+const simulateSP1Verification = (gameData: any): VerificationResult => {
   return {
     verified: true,
     proofId: `proof_${Date.now().toString(16)}`,
@@ -44,7 +51,7 @@ export const loadWasmModule = async () => {
   return loadPromise;
 };
 
-export const verifyGameWithSP1 = async (gameData: any) => {
+export const verifyGameWithSP1 = async (gameData: any): Promise<VerificationResult> => {
   const wasm = await loadWasmModule();
   console.log("Verifying game data with SP1...", gameData);
   
