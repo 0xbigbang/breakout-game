@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface DesktopIconProps {
@@ -10,13 +9,13 @@ interface DesktopIconProps {
 const DesktopIcon: React.FC<DesktopIconProps> = ({ name, icon, onDoubleClick }) => {
   return (
     <div 
-      className="flex flex-col items-center justify-center w-24 p-2 rounded hover:bg-white/10 cursor-pointer transition-colors text-center"
+      className="flex flex-col items-center justify-center w-28 p-3 rounded-xl backdrop-blur-md bg-black/40 hover:bg-black/60 cursor-pointer transition-all text-center border-2 border-purple-500/30 hover:border-purple-500/70 hover:scale-105 shadow-lg"
       onDoubleClick={onDoubleClick}
     >
-      <div className="mb-2 h-12 w-12 flex items-center justify-center">
+      <div className="mb-2 h-16 w-16 flex items-center justify-center bg-gradient-to-br from-purple-900 to-purple-600 rounded-full p-3 shadow-inner">
         {icon}
       </div>
-      <p className="text-white text-xs font-urbanist">{name}</p>
+      <p className="text-white text-sm font-urbanist font-semibold">{name}</p>
     </div>
   );
 };

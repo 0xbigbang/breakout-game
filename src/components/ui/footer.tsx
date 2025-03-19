@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
         >
           @beatdetect
         </a> | <a 
-          href="https://github.com/0xbigbang/pixel-proof-quest" 
+          href="https://github.com/0xbigbang/breakout-game" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-purple-400 hover:text-purple-300 transition-colors"

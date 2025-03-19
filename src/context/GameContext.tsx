@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useGameLevels } from '@/hooks/useGameLevels';
 
@@ -12,6 +11,7 @@ const BLOCK_GAP = 10;
 const PADDLE_SPEED = 8;
 const GAME_WIDTH = 600;
 const GAME_HEIGHT = 500;
+const BORDER_PADDING = 20;  // Padding from the game borders
 
 // Types for game objects
 type Position = {
@@ -79,7 +79,7 @@ const createInitialGameState = (blocks: Block[]): GameState => ({
   paddle: {
     position: {
       x: GAME_WIDTH / 2 - PADDLE_WIDTH / 2,
-      y: GAME_HEIGHT - PADDLE_HEIGHT - 10,
+      y: GAME_HEIGHT - PADDLE_HEIGHT - 13,
     },
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
@@ -87,7 +87,7 @@ const createInitialGameState = (blocks: Block[]): GameState => ({
   ball: {
     position: {
       x: GAME_WIDTH / 2,
-      y: GAME_HEIGHT - PADDLE_HEIGHT - 10 - BALL_RADIUS,
+      y: GAME_HEIGHT - PADDLE_HEIGHT - 13 - BALL_RADIUS,
     },
     radius: BALL_RADIUS,
     velocity: { dx: 0, dy: 0 },
@@ -135,7 +135,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ball: {
           position: {
             x: GAME_WIDTH / 2,
-            y: GAME_HEIGHT - PADDLE_HEIGHT - 10 - BALL_RADIUS,
+            y: GAME_HEIGHT - PADDLE_HEIGHT - BORDER_PADDING - BALL_RADIUS,
           },
           radius: BALL_RADIUS,
           velocity: { dx: 0, dy: 0 },
@@ -145,7 +145,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ...prevState.paddle,
           position: {
             x: GAME_WIDTH / 2 - PADDLE_WIDTH / 2,
-            y: GAME_HEIGHT - PADDLE_HEIGHT - 10,
+            y: GAME_HEIGHT - PADDLE_HEIGHT - BORDER_PADDING,
           },
         },
         levelComplete: false,
@@ -212,6 +212,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setKeysPressed(prev => ({ ...prev, [key]: true }));
       
       if (key === ' ') {
+        // Prevent default spacebar behavior (scrolling)
+        e.preventDefault();
         launchBall();
       }
     };
@@ -219,6 +221,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleKeyUp = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
       setKeysPressed(prev => ({ ...prev, [key]: false }));
+      
+      // Also prevent default for spacebar on keyup
+      if (key === ' ') {
+        e.preventDefault();
+      }
     };
     
     window.addEventListener('keydown', handleKeyDown);
@@ -269,10 +276,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Wall collisions
         if (newBallPosition.x - BALL_RADIUS < 0 || newBallPosition.x + BALL_RADIUS > GAME_WIDTH) {
           newBallVelocity.dx = -newBallVelocity.dx;
+          
+          // Add a slight random adjustment to the vertical velocity to prevent strict up-down patterns
+          const currentSpeed = Math.sqrt(newBallVelocity.dx ** 2 + newBallVelocity.dy ** 2);
+          newBallVelocity.dy += (Math.random() - 0.5) * (currentSpeed * 0.1);
         }
         
         if (newBallPosition.y - BALL_RADIUS < 0) {
           newBallVelocity.dy = -newBallVelocity.dy;
+          
+          // Add a slight random adjustment to the horizontal velocity
+          const currentSpeed = Math.sqrt(newBallVelocity.dx ** 2 + newBallVelocity.dy ** 2);
+          newBallVelocity.dx += (Math.random() - 0.5) * (currentSpeed * 0.1);
         }
         
         // Ball fell below paddle
@@ -351,6 +366,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
               // Hit from top or bottom
               newBallVelocity.dy = -newBallVelocity.dy;
+              
+              // Add a minimum horizontal velocity to prevent vertical-only movement
+              const currentSpeed = Math.sqrt(newBallVelocity.dx ** 2 + newBallVelocity.dy ** 2);
+              const minHorizontalVelocity = currentSpeed * 0.3;
+              if (Math.abs(newBallVelocity.dx) < minHorizontalVelocity) {
+                // Set a minimum horizontal velocity in a random direction
+                newBallVelocity.dx = (newBallVelocity.dx >= 0 ? 1 : -1) * minHorizontalVelocity;
+                // Slightly randomize the angle to prevent repeated patterns
+                newBallVelocity.dx += (Math.random() - 0.5) * minHorizontalVelocity;
+              }
             }
             
             return { ...block, destroyed: true };

@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 
 // Types for game objects
@@ -31,19 +30,19 @@ export const useGameLevels = (gameWidth: number, gameHeight: number) => {
     1: {
       rows: 5,
       blocksPerRow: 8,
-      colors: ['#9b87f5', '#7E69AB', '#6E59A5', '#D6BCFA', '#8B5CF6'],
+      colors: ['#FF5E5B', '#4CB944', '#3C91E6', '#FFDA22', '#FF9505', '#AF4D98', '#2BC016', '#00BBF9'],
       ballSpeed: 5,
     },
     2: {
       rows: 6,
       blocksPerRow: 9,
-      colors: ['#9b87f5', '#7E69AB', '#6E59A5', '#D6BCFA', '#8B5CF6', '#B45309'],
+      colors: ['#FF5E5B', '#4CB944', '#3C91E6', '#FFDA22', '#FF9505', '#AF4D98', '#2BC016', '#00BBF9', '#9D65FF'],
       ballSpeed: 6,
     },
     3: {
       rows: 7,
       blocksPerRow: 10,
-      colors: ['#9b87f5', '#7E69AB', '#6E59A5', '#D6BCFA', '#8B5CF6', '#B45309', '#9D174D'],
+      colors: ['#FF5E5B', '#4CB944', '#3C91E6', '#FFDA22', '#FF9505', '#AF4D98', '#2BC016', '#00BBF9', '#9D65FF', '#F15BB5'],
       ballSpeed: 7,
     }
   };

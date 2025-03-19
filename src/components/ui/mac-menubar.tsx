@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -16,67 +15,11 @@ const MacMenuBar: React.FC = () => {
 
   return (
     <div className="border-b border-gray-700 bg-gray-800 text-gray-300 font-urbanist">
-      <Menubar className="border-none bg-transparent rounded-none px-2 h-7">
-        <MenubarMenu>
-          <MenubarTrigger className="text-xs hover:bg-gray-700 data-[state=open]:bg-gray-700">File</MenubarTrigger>
-          <MenubarContent className="bg-gray-800 border-gray-700 text-gray-300">
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              New Game
-              <MenubarShortcut>⌘N</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Open
-              <MenubarShortcut>⌘O</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator className="bg-gray-700" />
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Save
-              <MenubarShortcut>⌘S</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator className="bg-gray-700" />
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Exit
-              <MenubarShortcut>⌘Q</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-
-        <MenubarMenu>
-          <MenubarTrigger className="text-xs hover:bg-gray-700 data-[state=open]:bg-gray-700">Edit</MenubarTrigger>
-          <MenubarContent className="bg-gray-800 border-gray-700 text-gray-300">
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Undo
-              <MenubarShortcut>⌘Z</MenubarShortcut>
-            </MenubarItem>
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Redo
-              <MenubarShortcut>⇧⌘Z</MenubarShortcut>
-            </MenubarItem>
-            <MenubarSeparator className="bg-gray-700" />
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Settings
-              <MenubarShortcut>⌘,</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-
-        <MenubarMenu>
-          <MenubarTrigger className="text-xs hover:bg-gray-700 data-[state=open]:bg-gray-700">View</MenubarTrigger>
-          <MenubarContent className="bg-gray-800 border-gray-700 text-gray-300">
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Leaderboard
-            </MenubarItem>
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Stats
-            </MenubarItem>
-            <MenubarSeparator className="bg-gray-700" />
-            <MenubarItem className="text-xs hover:bg-gray-700 focus:bg-gray-700">
-              Fullscreen
-              <MenubarShortcut>⌘F</MenubarShortcut>
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-
+      <Menubar className="border-none bg-transparent rounded-none px-2 h-9 flex items-center">
+        <div className="flex items-center mr-4">
+          <img src="/succinct-icon-pink.svg" alt="Succinct Logo" className="h-5 mr-2" />
+        </div>
+        
         <MenubarMenu>
           <MenubarTrigger className="text-xs hover:bg-gray-700 data-[state=open]:bg-gray-700">Help</MenubarTrigger>
           <MenubarContent className="bg-gray-800 border-gray-700 text-gray-300">
@@ -85,7 +28,7 @@ const MacMenuBar: React.FC = () => {
             </MenubarItem>
             <MenubarItem 
               className="text-xs hover:bg-gray-700 focus:bg-gray-700"
-              onClick={() => window.open("https://github.com/0xbigbang/pixel-proof-quest", "_blank")}
+              onClick={() => window.open("https://github.com/0xbigbang/breakout-game", "_blank")}
             >
               View on GitHub
             </MenubarItem>

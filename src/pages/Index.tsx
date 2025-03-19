@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import GameBoard from "@/components/game/GameBoard";
 import { GameProvider } from "@/context/GameContext";
@@ -7,6 +6,7 @@ import DesktopIcon from "@/components/game/DesktopIcon";
 import Footer from "@/components/ui/footer";
 import { Gamepad } from "lucide-react";
 import { loadWasmModule } from "@/lib/wasmLoader";
+import MacMenuBar from "@/components/ui/mac-menubar";
 
 const Index = () => {
   const [showGame, setShowGame] = useState(false);
@@ -40,18 +40,23 @@ const Index = () => {
     <div 
       className="min-h-screen flex flex-col items-center justify-between bg-purple-900 text-white p-4 font-urbanist"
       style={{ 
-        backgroundImage: "url('/lovable-uploads/f6f145ed-5e64-43e8-ba68-74f45835404b.png')",
+        backgroundImage: "url('/background-image.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat"
       }}
     >
+      {showGame && (
+        <div className="fixed top-0 left-0 w-full z-10">
+          <MacMenuBar />
+        </div>
+      )}
       <div className="flex-grow flex items-center justify-center w-full">
         {!showGame ? (
           <div className="flex flex-col items-center">
             <DesktopIcon 
               name="Crypto Breakout"
-              icon={<Gamepad size={36} className="text-purple-400" />}
+              icon={<Gamepad size={42} className="text-white" />}
               onDoubleClick={handleOpenGame}
             />
             <p className="mt-8 text-gray-300 text-sm bg-black/40 px-4 py-2 rounded-lg backdrop-blur-sm">
@@ -75,13 +80,13 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <div className="container max-w-4xl mx-auto">
+          <div className="container max-w-4xl mx-auto pt-10">
             <MacWindow title="Crypto Breakout" onClose={handleCloseGame}>
               <div className="p-4">
-                <div className="text-center mb-6">
-                  <h1 className="text-4xl font-bold mb-2 text-purple-400">Crypto Breakout</h1>
-                  <p className="text-xl text-gray-300 mb-2">Destroy blocks to generate proofs!</p>
-                  <p className="text-sm text-gray-400 max-w-md mx-auto">
+                <div className="text-center mb-3">
+                  <h1 className="text-3xl font-bold mb-1 text-purple-400">Succinct Crypto Breakout Game</h1>
+                  <p className="text-lg text-gray-300 mb-1">Destroy blocks to generate proofs!</p>
+                  <p className="text-xs text-gray-400 max-w-md mx-auto">
                     A ZK arcade game using WebAssembly to verify your gameplay with SP1 zero-knowledge proofs
                   </p>
                 </div>
@@ -90,12 +95,12 @@ const Index = () => {
                   <GameBoard />
                 </GameProvider>
                 
-                <div className="mt-6 text-sm text-gray-400">
+                <div className="mt-2 text-xs text-gray-400">
                   <p>Use left/right arrow keys or A/D to move the paddle</p>
-                  <p>Press Space to launch the ball</p>
+                  <p>Press Space to launch the crab</p>
                 </div>
                 
-                <div className="mt-6 max-w-2xl text-center text-xs text-gray-500 bg-gray-800 p-3 rounded-md">
+                <div className="mt-3 max-w-2xl text-center text-xs text-gray-500 bg-gray-800 p-2 rounded-md">
                   <h3 className="text-purple-400 mb-1 font-semibold">About WebAssembly & SP1 Integration</h3>
                   <p className="mb-2">
                     This game uses WebAssembly for cryptographic proof generation:

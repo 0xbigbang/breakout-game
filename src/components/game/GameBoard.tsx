@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ const GameBoard = () => {
   // Load crab image
   useEffect(() => {
     const img = new Image();
-    img.src = '/lovable-uploads/b7ee3073-a53a-4f0d-a5fa-9f8dcaff7ca0.png';
+    img.src = '/image.png';
     img.onload = () => {
       setCrabImage(img);
     };
@@ -37,7 +36,16 @@ const GameBoard = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Draw paddle
-    ctx.fillStyle = '#9b87f5';
+    const paddleGradient = ctx.createLinearGradient(
+      gameState.paddle.position.x,
+      gameState.paddle.position.y,
+      gameState.paddle.position.x,
+      gameState.paddle.position.y + gameState.paddle.height
+    );
+    paddleGradient.addColorStop(0, '#9b87f5');
+    paddleGradient.addColorStop(1, '#7365c6');
+    
+    ctx.fillStyle = paddleGradient;
     ctx.fillRect(
       gameState.paddle.position.x,
       gameState.paddle.position.y,
@@ -45,10 +53,19 @@ const GameBoard = () => {
       gameState.paddle.height
     );
     
+    // Add highlight to paddle
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillRect(
+      gameState.paddle.position.x,
+      gameState.paddle.position.y,
+      gameState.paddle.width,
+      5
+    );
+    
     // Draw crab (instead of ball)
     if (crabImage) {
       // Calculate position to center the crab image
-      const crabSize = gameState.ball.radius * 2.5; // Make crab a bit larger than the ball radius
+      const crabSize = gameState.ball.radius * 3.5; // Make crab a bit larger than the ball radius
       ctx.drawImage(
         crabImage,
         gameState.ball.position.x - crabSize/2,
@@ -124,7 +141,7 @@ const GameBoard = () => {
   
   return (
     <div className="flex flex-col items-center font-urbanist">
-      <div className="flex justify-between w-full mb-2">
+      <div className="flex justify-between items-center w-full mb-4 gap-3">
         <GameStats 
           score={gameState.score} 
           lives={gameState.lives}
@@ -141,12 +158,12 @@ const GameBoard = () => {
       <canvas
         ref={canvasRef}
         width={600}
-        height={500}
-        className="border-2 border-purple-700 rounded-lg shadow-lg"
+        height={480}
+        className="border-2 border-purple-500 rounded-lg shadow-lg bg-gradient-to-b from-gray-800 to-gray-900"
       />
       
       {(gameState.gameOver || gameState.gameWon) && (
-        <div className="mt-4">
+        <div className="mt-3">
           <Button
             onClick={resetGame}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
@@ -157,7 +174,7 @@ const GameBoard = () => {
       )}
       
       {gameState.levelComplete && !gameState.gameWon && (
-        <div className="mt-4">
+        <div className="mt-3">
           <Button
             onClick={advanceLevel}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
@@ -168,7 +185,7 @@ const GameBoard = () => {
       )}
       
       {!gameState.ball.inPlay && !gameState.gameOver && !gameState.gameWon && !gameState.levelComplete && (
-        <div className="mt-4">
+        <div className="mt-3">
           <Button
             onClick={launchBall}
             className="bg-purple-600 hover:bg-purple-700 text-white font-bold"

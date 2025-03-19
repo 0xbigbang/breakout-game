@@ -87,10 +87,10 @@ const About = () => {
               </div>
 
               <div className="text-center text-gray-400 text-sm">
-                <p>Version 1.0.0 | Created with ❤️ by the Crypto Breakout Team</p>
+                
                 <p className="mt-2">
                   <a 
-                    href="https://github.com/0xbigbang/pixel-proof-quest" 
+                    href="https://github.com/0xbigbang/breakout-game" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-purple-400 hover:text-purple-300 transition-colors"
