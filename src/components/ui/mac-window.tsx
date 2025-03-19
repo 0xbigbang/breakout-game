@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { X, Minus, CircleIcon } from 'lucide-react';
+import MacMenuBar from './mac-menubar';
 
 interface MacWindowProps {
   title: string;
@@ -41,6 +42,9 @@ const MacWindow: React.FC<MacWindowProps> = ({
         <div className="text-sm text-gray-300 font-urbanist">{title}</div>
         <div className="w-14"></div> {/* Spacer to center the title */}
       </div>
+      
+      {/* Menu bar */}
+      <MacMenuBar />
       
       {/* Window content */}
       <div className={`transition-all duration-300 ${isMinimized ? 'h-0 overflow-hidden' : ''}`}>

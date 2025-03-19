@@ -27,7 +27,7 @@ const ProofCounter: React.FC<ProofCounterProps> = ({
           </div>
         </div>
         
-        {(gameOver || gameWon) && count > 0 && (
+        {count > 0 && (
           <Button 
             variant="outline" 
             size="sm"
