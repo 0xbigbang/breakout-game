@@ -1,8 +1,6 @@
-# Crypto Breakout
+# Succinct Crypto Breakout Game
 
-A retro Breakout-style arcade game powered by WebAssembly and SP1 zero-knowledge proofs.
-
-![Crypto Breakout Game]
+A retro Breakout-style arcade game powered by WASM and SP1 zero-knowledge proofs. This is my contribution to the Succinct community.
 
 ## 🎮 Game Overview
 
