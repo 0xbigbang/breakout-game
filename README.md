@@ -67,8 +67,8 @@ SP1 is used to generate and verify zero-knowledge proofs of gameplay achievement
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/crypto-breakout.git
-cd crypto-breakout
+git clone https://github.com/0xbigbang/breakout-game
+cd breakout-game
 
 # Install dependencies
 npm install
