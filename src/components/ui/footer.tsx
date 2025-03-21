@@ -6,12 +6,12 @@ const Footer: React.FC = () => {
     <div className="w-full text-center py-2 text-xs text-gray-400 font-urbanist">
       <p>
         Made by <a 
-          href="https://twitter.com/beatdetect" 
+          href="https://twitter.com/0xbigbang9" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-purple-400 hover:text-purple-300 transition-colors"
         >
-          @beatdetect
+          @0xbigbang9
         </a> | <a 
           href="https://github.com/0xbigbang/breakout-game" 
           target="_blank" 

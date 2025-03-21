@@ -1,4 +1,6 @@
-// Utility for loading and interacting with WASM modules
+// Updated WASM loader to use SP1 zero-knowledge proofs
+import init, { verify_game, init_panic_hook } from '../../wasm/pkg';
+
 let wasmModule: any = null;
 let isLoading = false;
 let loadPromise: Promise<any> | null = null;
@@ -9,17 +11,8 @@ export interface VerificationResult {
   proofId: string;
   commitment: string;
   verificationTime: string;
+  proofDetails: string;
 }
-
-// Simple SP1 verification simulator (will be replaced by actual WASM)
-const simulateSP1Verification = (gameData: any): VerificationResult => {
-  return {
-    verified: true,
-    proofId: `proof_${Date.now().toString(16)}`,
-    commitment: `0x${Math.random().toString(16).substring(2, 10)}${Math.random().toString(16).substring(2, 10)}`,
-    verificationTime: `${Math.floor(Math.random() * 500 + 800)}ms`,
-  };
-};
 
 export const loadWasmModule = async () => {
   if (wasmModule) return wasmModule;
@@ -27,41 +20,36 @@ export const loadWasmModule = async () => {
 
   isLoading = true;
   
-  // In a real implementation, we would load actual WASM here
-  // For example:
-  // loadPromise = import('@/lib/sp1_wasm').then(module => {
-  //   wasmModule = module;
-  //   isLoading = false;
-  //   return module;
-  // });
-
-  // For now, we'll simulate loading with a delay
-  loadPromise = new Promise((resolve) => {
-    console.log("Loading WASM module (simulated)...");
-    setTimeout(() => {
-      wasmModule = {
-        verify_game: simulateSP1Verification,
-      };
+  try {
+    loadPromise = init().then(() => {
+      init_panic_hook(); // Initialize panic hook for better error messages
+      wasmModule = { verify_game };
       isLoading = false;
-      console.log("WASM module loaded successfully (simulated)");
-      resolve(wasmModule);
-    }, 800);
-  });
+      console.log("WASM module with SP1 loaded successfully");
+      return wasmModule;
+    });
 
-  return loadPromise;
+    return loadPromise;
+  } catch (error) {
+    console.error("Failed to load WASM module:", error);
+    isLoading = false;
+    throw error;
+  }
 };
 
 export const verifyGameWithSP1 = async (gameData: any): Promise<VerificationResult> => {
   const wasm = await loadWasmModule();
-  console.log("Verifying game data with SP1...", gameData);
+  console.log("Generating SP1 zero-knowledge proof for game data...", gameData);
   
-  // In a real implementation, this would call the actual WASM function
-  // return wasm.verify_game(gameData);
-  
-  // For simulation, we'll add a delay to represent computation time
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(simulateSP1Verification(gameData));
-    }, 1500);
-  });
+  try {
+    // Call the Rust WASM function which now returns a Promise
+    const result = await wasm.verify_game(gameData);
+    console.log("SP1 proof generated successfully:", result);
+    return result as VerificationResult;
+  } catch (error) {
+    console.error("SP1 proof generation failed:", error);
+    throw error;
+  }
 };
+
+// Just checking if this file exists

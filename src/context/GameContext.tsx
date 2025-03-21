@@ -62,6 +62,7 @@ interface GameContextType {
   movePaddle: (direction: 'left' | 'right') => void;
   launchBall: () => void;
   advanceLevel: () => void;
+  generateProof: () => Promise<void>;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -105,9 +106,32 @@ const createInitialGameState = (blocks: Block[]): GameState => ({
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const gameLevels = useGameLevels(GAME_WIDTH, GAME_HEIGHT);
-  const initialBlocks = gameLevels.createBlocksForLevel(1, BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_GAP);
-  const [gameState, setGameState] = useState<GameState>(createInitialGameState(initialBlocks));
-  const [keysPressed, setKeysPressed] = useState<{ [key: string]: boolean }>({});
+  const [gameState, setGameState] = useState<GameState>(createInitialGameState(
+    gameLevels.createBlocksForLevel(1, BLOCK_WIDTH, BLOCK_HEIGHT, BLOCK_GAP)
+  ));
+  const [gameInterval, setGameInterval] = useState<NodeJS.Timeout | null>(null);
+  const [keyPressedLeft, setKeyPressedLeft] = useState(false);
+  const [keyPressedRight, setKeyPressedRight] = useState(false);
+  
+  // Add function to generate SP1 proof manually
+  const generateProof = async () => {
+    // Only generate proof if there are blocks destroyed
+    if (gameState.blocks.some(block => block.destroyed)) {
+      // Increment the proof counter
+      setGameState(prev => ({
+        ...prev,
+        proofGenerated: prev.proofGenerated + 1
+      }));
+      
+      // In a real implementation, this would actually call the SP1 proof generator
+      // But we're already doing that in the ProofTerminal component
+      console.log("Manual proof generation triggered");
+      return Promise.resolve();
+    } else {
+      console.log("No blocks destroyed yet - nothing to prove");
+      return Promise.resolve();
+    }
+  };
   
   // Reset game to initial state
   const resetGame = useCallback(() => {
@@ -131,25 +155,25 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setGameState(prevState => ({
         ...prevState,
+        level: nextLevel,
         blocks,
-        ball: {
-          position: {
-            x: GAME_WIDTH / 2,
-            y: GAME_HEIGHT - PADDLE_HEIGHT - BORDER_PADDING - BALL_RADIUS,
-          },
-          radius: BALL_RADIUS,
-          velocity: { dx: 0, dy: 0 },
-          inPlay: false,
-        },
         paddle: {
           ...prevState.paddle,
           position: {
             x: GAME_WIDTH / 2 - PADDLE_WIDTH / 2,
-            y: GAME_HEIGHT - PADDLE_HEIGHT - BORDER_PADDING,
+            y: GAME_HEIGHT - PADDLE_HEIGHT - 13,
           },
         },
+        ball: {
+          ...prevState.ball,
+          position: {
+            x: GAME_WIDTH / 2,
+            y: GAME_HEIGHT - PADDLE_HEIGHT - 13 - BALL_RADIUS,
+          },
+          velocity: { dx: 0, dy: 0 },
+          inPlay: false,
+        },
         levelComplete: false,
-        level: nextLevel
       }));
     } else {
       setGameState(prevState => ({
@@ -209,7 +233,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      setKeysPressed(prev => ({ ...prev, [key]: true }));
+      if (key === 'arrowleft' || key === 'a') {
+        setKeyPressedLeft(true);
+      } else if (key === 'arrowright' || key === 'd') {
+        setKeyPressedRight(true);
+      }
       
       if (key === ' ') {
         // Prevent default spacebar behavior (scrolling)
@@ -220,7 +248,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const handleKeyUp = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
-      setKeysPressed(prev => ({ ...prev, [key]: false }));
+      if (key === 'arrowleft' || key === 'a') {
+        setKeyPressedLeft(false);
+      } else if (key === 'arrowright' || key === 'd') {
+        setKeyPressedRight(false);
+      }
       
       // Also prevent default for spacebar on keyup
       if (key === ' ') {
@@ -242,22 +274,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (gameState.gameOver || gameState.gameWon || gameState.levelComplete) return;
     
     const processPaddleMovement = () => {
-      if (
-        (keysPressed['arrowleft'] || keysPressed['a']) && 
-        !(keysPressed['arrowright'] || keysPressed['d'])
-      ) {
+      if (keyPressedLeft && !keyPressedRight) {
         movePaddle('left');
-      } else if (
-        (keysPressed['arrowright'] || keysPressed['d']) && 
-        !(keysPressed['arrowleft'] || keysPressed['a'])
-      ) {
+      } else if (keyPressedRight && !keyPressedLeft) {
         movePaddle('right');
       }
     };
     
     const intervalId = setInterval(processPaddleMovement, 16);
     return () => clearInterval(intervalId);
-  }, [keysPressed, movePaddle, gameState.gameOver, gameState.gameWon, gameState.levelComplete]);
+  }, [keyPressedLeft, keyPressedRight, movePaddle, gameState.gameOver, gameState.gameWon, gameState.levelComplete]);
   
   // Game loop
   useEffect(() => {
@@ -353,7 +379,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             newBallPosition.y - BALL_RADIUS <= blockBottom
           ) {
             blocksChanged = true;
-            newProofGenerated += 1;
             
             // Determine collision direction
             const dx = newBallPosition.x - (blockLeft + block.width / 2);
@@ -382,6 +407,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           return block;
         });
+        
+        // Increment proof counter only when a block was destroyed
+        if (blocksChanged) {
+          newProofGenerated += 1;
+        }
         
         // Check if all blocks are destroyed
         const allBlocksDestroyed = newBlocks.every(block => block.destroyed);
@@ -430,6 +460,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         movePaddle,
         launchBall,
         advanceLevel,
+        generateProof,
       }}
     >
       {children}

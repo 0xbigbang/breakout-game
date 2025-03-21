@@ -82,36 +82,24 @@ const Index = () => {
         ) : (
           <div className="container max-w-4xl mx-auto pt-10">
             <MacWindow title="Crypto Breakout" onClose={handleCloseGame}>
-              <div className="p-4">
-                <div className="text-center mb-3">
-                  <h1 className="text-3xl font-bold mb-1 text-purple-400">Succinct Crypto Breakout Game</h1>
-                  <p className="text-lg text-gray-300 mb-1">Destroy blocks to generate proofs!</p>
-                  <p className="text-xs text-gray-400 max-w-md mx-auto">
+              <div className="p-4 flex flex-col items-center">
+                <div className="text-center mb-4">
+                  <h1 className="text-3xl font-bold text-purple-400">Succinct Crypto Breakout Game</h1>
+                  <p className="text-lg text-gray-300">Destroy blocks to generate proofs!</p>
+                  <p className="text-sm text-gray-400">
                     A ZK arcade game using WebAssembly to verify your gameplay with SP1 zero-knowledge proofs
                   </p>
                 </div>
                 
-                <GameProvider>
-                  <GameBoard />
-                </GameProvider>
-                
-                <div className="mt-2 text-xs text-gray-400">
-                  <p>Use left/right arrow keys or A/D to move the paddle</p>
-                  <p>Press Space to launch the crab</p>
+                <div className="w-full max-w-xl">
+                  <GameProvider>
+                    <GameBoard />
+                  </GameProvider>
                 </div>
                 
-                <div className="mt-3 max-w-2xl text-center text-xs text-gray-500 bg-gray-800 p-2 rounded-md">
-                  <h3 className="text-purple-400 mb-1 font-semibold">About WebAssembly & SP1 Integration</h3>
-                  <p className="mb-2">
-                    This game uses WebAssembly for cryptographic proof generation:
-                  </p>
-                  <ul className="text-left list-disc pl-5 space-y-1">
-                    <li>WASM module loads at startup to enable fast native-speed cryptography</li>
-                    <li>Game state is processed by the WASM module to generate SP1 proofs</li>
-                    <li>SP1 creates zero-knowledge proofs that verify gameplay without revealing details</li>
-                    <li>Proofs can be generated at any point during gameplay</li>
-                    <li>Generated proofs could be submitted to blockchain for verification</li>
-                  </ul>
+                <div className="mt-2 text-center text-sm text-gray-400">
+                  <p>Use left/right arrow keys or A/D to move the paddle</p>
+                  <p>Press Space to launch the crab</p>
                 </div>
               </div>
             </MacWindow>
